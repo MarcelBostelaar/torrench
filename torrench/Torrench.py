@@ -207,7 +207,7 @@ class Torrench(Config):
             sys.exit(2)
 
         if self.page_limit <= 0 or self.page_limit > 50:
-            self.logger.debug("Invalid page_limit entered: %d" % (tr.page_limit))
+            self.logger.debug("Invalid page_limit entered: %d" % (self.page_limit))
             print("Enter valid page input [0<p<=50]")
             sys.exit(2)
 
