@@ -90,11 +90,8 @@ class InteractiveMode:
         """
         _modules = self._set_modules()
         if query and module in _modules and not query.isspace():
-            self.logger.debug("Selected module %s, query: %s" % ((module), query))
-            if module in ['!t', '!k', '!s', '!i', '!x', '!n']:
-                _modules[module].main(query, page_limit=1)
-            else:
-                _modules[module].main(query)
+            self.logger.debug("Selected module %s, query: %s" % (module, query))
+            _modules[module].main(query)
         else:
             print("You called an invalid module or provided an empty query.")
             self.logger.debug("Called an invalid module or provided an empty query.")
@@ -131,8 +128,8 @@ def inter():
     """
     Execution will start here.
     """
+    i = InteractiveMode()
     try:
-        i = InteractiveMode()
         while True:
             if not i.OS_WIN:
                 data = input(Config().colorify("yellow", '\ntorrench > '))

@@ -3,7 +3,6 @@
 import platform
 import os
 import sys
-import logging
 import logging.config
 import torrench.Torrench as Torrench
 import torrench.utilities.logger as logger

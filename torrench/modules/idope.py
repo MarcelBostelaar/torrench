@@ -116,9 +116,9 @@ class Idope(Config):
 
 def main(title, page_limit):
     """Execution begins here."""
+    print("\n[Idope]")
+    idp = Idope(title, page_limit)
     try:
-        print("\n[Idope]")
-        idp = Idope(title, page_limit)
         idp.get_html()
         idp.parse_html()
         idp.post_fetch()

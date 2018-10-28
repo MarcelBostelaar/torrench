@@ -220,11 +220,11 @@ class ThePirateBay(Config):
 
 def main(title, page_limit):
     """Execution begins here."""
+    print("\n[The Pirate Bay]\n")
+    print("Obtaining proxies...")
+    tpb = ThePirateBay(title, page_limit)
+    tpb.check_proxy()
     try:
-        print("\n[The Pirate Bay]\n")
-        print("Obtaining proxies...")
-        tpb = ThePirateBay(title, page_limit)
-        tpb.check_proxy()
         if title is None:
             tpb.get_top_html()
         else:

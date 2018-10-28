@@ -115,9 +115,9 @@ def main(title, page_limit):
     """
     Execution will begin here.
     """
+    print("\n[Nyaa.si]")
+    nyaa = Nyaa(title, page_limit)
     try:
-        print("\n[Nyaa.si]")
-        nyaa = Nyaa(title, page_limit)
         nyaa.get_html()
         nyaa.parse_html()
         nyaa.post_fetch()

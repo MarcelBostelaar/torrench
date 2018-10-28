@@ -193,7 +193,7 @@ class Torrench(Config):
             self.logger.debug("Directory empty!")
             sys.exit(2)
         else:
-            for count, file_name in enumerate(files, 1):
+            for count, file_name in enumerate(files, 1):  # !!! Is this wrong?
                 os.remove(os.path.join(temp_dir, file_name))
             print("Removed {} file(s).".format(count))
             self.logger.debug("Removed {} file(s).".format(count))
@@ -313,8 +313,8 @@ class Torrench(Config):
 
 def main():
     """Execution begins here."""
+    tr = Torrench()
     try:
-        tr = Torrench()
         tr.define_args()
         if tr.args.update_config:
             import torrench.utilities.update_config as update

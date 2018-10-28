@@ -1,7 +1,7 @@
 """ Config module."""
 import logging
 import os
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 
 from torrench.utilities.Common import Common
 
@@ -25,7 +25,7 @@ class Config(Common):
     def __init__(self):
         """Initialisations."""
         Common.__init__(self)
-        self.config = SafeConfigParser()
+        self.config = ConfigParser()
         self.config_dir = os.getenv('XDG_CONFIG_HOME', os.path.expanduser(os.path.join('~', '.config')))
         self.full_config_dir = os.path.join(self.config_dir, 'torrench')
         self.config_file_name = "config.ini"

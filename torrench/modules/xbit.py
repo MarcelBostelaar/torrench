@@ -83,9 +83,9 @@ class XBit(Config):
 
 def main(title):
     """Execution begins here."""
+    xb = XBit(title)
     try:
         print("\n[XBit.pw]\n")
-        xb = XBit(title)
         print("Using %s" %(xb.colorify("yellow", xb.proxy)))
         print("Fetching results...")
         xb.search_torrent()

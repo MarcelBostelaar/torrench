@@ -109,10 +109,10 @@ class DistroWatch(Common):
 
 def main(title):
     """Execution begins here."""
+    print("\n[DistroWatch]\n")
+    title = title.lower()
+    dw = DistroWatch(title)
     try:
-        print("\n[DistroWatch]\n")
-        title = title.lower()
-        dw = DistroWatch(title)
         print("Fetching results...")
         dw.soup = dw.http_request(dw.url)
         dw.fetch_results()

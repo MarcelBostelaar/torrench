@@ -176,9 +176,9 @@ class LinuxTracker(Common):
 
 def main(title):
     """Execution begins here."""
+    print("\n[LinuxTracker]\n")
+    ltr = LinuxTracker(title)
     try:
-        print("\n[LinuxTracker]\n")
-        ltr = LinuxTracker(title)
         temp = input("Display categories? [y/n]: ")
         if temp == 'y' or temp == 'Y':
             ltr.logger.debug("Display categories: %c" % (temp))

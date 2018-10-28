@@ -180,10 +180,10 @@ class x1337(Config):
 
 def main(title, page_limit):
     """Execution begins here."""
+    x13 = x1337(title, page_limit)
     try:
         print("\n[1337x]\n")
         print("Obtaining proxies...")
-        x13 = x1337(title, page_limit)
         x13.check_proxy()
         x13.get_html()
         x13.parse_html()

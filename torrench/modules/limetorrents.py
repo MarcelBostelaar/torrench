@@ -162,10 +162,10 @@ class LimeTorrents(Config):
 
 def main(title, page_limit):
     """Execution begins here."""
+    print("\n[LimeTorrents]\n")
+    print("Obtaining proxies...")
+    lmt = LimeTorrents(title, page_limit)
     try:
-        print("\n[LimeTorrents]\n")
-        print("Obtaining proxies...")
-        lmt = LimeTorrents(title, page_limit)
         lmt.check_proxy()
         lmt.get_html()
         lmt.parse_html()

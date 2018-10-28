@@ -61,7 +61,7 @@ def get_details(url, index):
                     pg_count = 0
                     temp = False
                 elif opt == 'n' or opt == 'N':
-                    pg_inp = input("Number of pages to fetch comments from? [0 < n < %d]: " % (total_comments_pages));
+                    pg_inp = input("Number of pages to fetch comments from? [0 < n < %d]: " % (total_comments_pages))
                     if pg_inp == '':
                         print("Bad Input")
                     else:

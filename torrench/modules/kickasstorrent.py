@@ -118,6 +118,7 @@ class KickassTorrents(Config):
                     uploader = i.find('span', class_='lightgrey').get_text().split(" ")[-4]
                     category = i.find('span', class_='lightgrey').get_text().split(" ")[-2]
                     verified_uploader = i.find('a', {'title': 'Verified Torrent'})
+                    comment_count = 0
                     if verified_uploader is not None:
                         uploader = self.colorify("yellow", uploader)
                         comment_count = i.find('a', class_='icommentjs').get_text()
@@ -148,10 +149,10 @@ class KickassTorrents(Config):
 
 def main(title, page_limit):
     """Execution begins here."""
+    print("\n[KickassTorrents]\n")
+    print("Obtaining proxies...")
+    kat = KickassTorrents(title, page_limit)
     try:
-        print("\n[KickassTorrents]\n")
-        print("Obtaining proxies...")
-        kat = KickassTorrents(title, page_limit)
         kat.check_proxy()
         kat.get_html()
         kat.parse_html()

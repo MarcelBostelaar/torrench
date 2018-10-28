@@ -7,7 +7,7 @@ import subprocess
 import sys
 import time
 import webbrowser
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 
 import colorama
 import requests
@@ -46,7 +46,7 @@ class Common:
 
     def __init__(self):
         """Initialisations."""
-        self.config = SafeConfigParser()
+        self.config = ConfigParser()
         self.config_dir = os.getenv('XDG_CONFIG_HOME', os.path.expanduser(os.path.join('~', '.config')))
         self.full_config_dir = os.path.join(self.config_dir, 'torrench')
         self.config_file_name = "torrench.ini"

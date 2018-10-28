@@ -200,10 +200,10 @@ class SkyTorrents(Config):
 
 def main(title, page_limit):
     """Execution begins here."""
+    print("\n[SkyTorrents]\n")
+    print("Obtaining proxies...")
+    sky = SkyTorrents(title, page_limit)
     try:
-        print("\n[SkyTorrents]\n")
-        print("Obtaining proxies...")
-        sky = SkyTorrents(title, page_limit)
         sky.check_proxy()
         if title is None:
             sky.get_top_html()

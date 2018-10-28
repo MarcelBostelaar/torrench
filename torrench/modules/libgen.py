@@ -77,7 +77,7 @@ class LibGen(Config):
                     str(self.index) + "--", publisher, year, language]
                 masterlist.append(self.mylist)
             self.logger.debug("Results fetched successfully!")
-            self.show_output(masterlist, self.output_headers)
+            self.show_output()
         except Exception as e:
             self.logger.exception(e)
             print("Error message: %s" % (e))
@@ -92,7 +92,7 @@ class LibGen(Config):
         and total time taken to fetch results.
         """
         oplist = [self.index, self.total_fetch_time]
-        self.after_output('libgen', oplist)
+        self.after_output(oplist)
 
     def select_torrent(self):
         """
