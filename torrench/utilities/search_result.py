@@ -1,7 +1,7 @@
 
 
 class SearchResult:
-    def __init__(self, site: str, name:str, uploader: str, link: str, magnetlink: str, seeders: int, leechers: int):
+    def __init__(self, site: str, name: str, uploader: str, link: str, magnetlink: str, seeders: int, leechers: int):
         self.site = site
         self.name = name
         self.link = link
@@ -9,3 +9,6 @@ class SearchResult:
         self.seeders = seeders
         self.leechers = leechers
         self.uploader = uploader
+
+
+
