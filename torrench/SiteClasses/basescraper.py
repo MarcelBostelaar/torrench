@@ -2,6 +2,7 @@ import multiprocessing as mp
 from torrench.utilities.http_utils import http_request
 from torrench.globals import logger
 from torrench.utilities.search_result import SearchResult
+from bs4 import BeautifulSoup
 
 from typing import List
 proxy_timeout_s = 15
@@ -26,6 +27,16 @@ class BaseScraper:
         # Get process results from the output queue
         results = [output.get() for p in processes]
         return [x for x in results if x is not None and validityfunc(x)]
+
+
+    """
+    Fetches a list of url strings and returns the soup
+    """
+    @staticmethod
+    def fetch_pages(urls: List[str], timeout_fetch_seconds) -> List[BeautifulSoup]:
+        #  Possible to parralellize this function similar to check_proxies
+        return [http_request(x, timeout_fetch_seconds) for x in urls]
+
 
     """
     Takes a title to search, the number of pages to search

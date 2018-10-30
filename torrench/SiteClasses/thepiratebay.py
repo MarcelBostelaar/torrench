@@ -59,20 +59,17 @@ class ThePirateBay(BaseScraper):
         if not self.can_search():
             logger.debug("Cannot search")
             raise Exception("Cannot search")
-        return self.__search_urls([searchurlbase % (title, page) for page in range(pages)])
+        pages = [self.active_proxy + searchurlbase % (title, page) for page in range(pages)]
+        return self.__parsehtml(self.fetch_pages(pages, timeout_fetch_s))
 
     def can_search(self):
         return self.active_proxy is not None
 
     def search_top48h(self) -> List[PirateBayResult]:
-        return self.__search_urls([top48])
+        return self.__parsehtml(self.fetch_pages([self.active_proxy + top48], timeout_fetch_s))
 
     def search_top100(self) -> List[PirateBayResult]:
-        return self.__search_urls([top])
-
-    def __search_urls(self, relative_urls) -> List[PirateBayResult]:
-        html = [http_request(self.active_proxy + x, timeout_fetch_s) for x in relative_urls]
-        return self.__parsehtml(html)
+        return self.__parsehtml(self.fetch_pages([self.active_proxy + top], timeout_fetch_s))
 
     def __parsehtml(self, pages) -> List[PirateBayResult]:
         content = [page.find('table', id="searchResult") for page in pages]
