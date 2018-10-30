@@ -57,8 +57,9 @@ class ThePirateBay(BaseScraper):
 
     def search(self, title, pages) -> List[PirateBayResult]:
         if not self.can_search():
-            logger.debug("Cannot search")
-            raise Exception("Cannot search")
+            search_message = "Cannot search the pirate bay"
+            logger.debug(search_message)
+            raise Exception(search_message)
         pages = [self.active_proxy + searchurlbase % (title, page) for page in range(pages)]
         return self.__parsehtml(self.fetch_pages(pages, timeout_fetch_s))
 
