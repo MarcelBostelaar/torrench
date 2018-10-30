@@ -1,4 +1,4 @@
-from torrench.modules.basescraper import BaseScraper
+from torrench.SiteClasses.basescraper import BaseScraper
 from torrench.globals import logger
 from torrench.utilities.http_utils import http_request
 from torrench.utilities.search_result import SearchResult
@@ -46,7 +46,7 @@ for the top of the past 48h and the top 100 torrents respectively.
 """
 
 
-class ThePirateBay2(BaseScraper):
+class ThePirateBay(BaseScraper):
 
     def __init__(self, proxies):
         validproxies = self.check_proxies(proxies, lambda soup: soup.a.string != 'The Pirate Bay')

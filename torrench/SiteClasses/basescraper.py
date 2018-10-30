@@ -3,7 +3,7 @@ from torrench.utilities.http_utils import http_request
 from torrench.globals import logger
 from torrench.utilities.search_result import SearchResult
 
-from typing import List, Union, Tuple
+from typing import List
 proxy_timeout_s = 15
 
 

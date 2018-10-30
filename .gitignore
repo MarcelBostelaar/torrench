@@ -5,6 +5,7 @@ torrench/*.spec
 __pycache__
 
 # Virtualenv specific
+venv/
 env/
 build/
 dist/
