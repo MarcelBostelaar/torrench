@@ -12,7 +12,7 @@ class BaseScraper:
 
     """Checks a list of proxies and returns a proxy that is valid"""
     @staticmethod
-    def check_proxies(proxies: List[str], validityfunc: function) -> List[str]:
+    def check_proxies(proxies: List[str], validityfunc) -> List[str]:
         output = mp.Queue()
         processes = [mp.Process(target=http_request, args=(proxy, proxy_timeout_s)) for proxy in proxies]
 

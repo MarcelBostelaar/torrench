@@ -13,3 +13,4 @@ torrench.egg-info/
 
 .vscode
 .idea
+torrench/testenvironment\.py

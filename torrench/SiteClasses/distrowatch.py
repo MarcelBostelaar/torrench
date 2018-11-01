@@ -14,7 +14,12 @@ class DistroWatch(BaseScraper):
 
     def __init__(self):
         soup = http_request(siteurl, timeout)
-        rows = soup.find_all(lambda x: x.find('td', 'torrent') is not None)
+        tables = soup.findAll('tbody')
+        rows = []
+        [rows.append(x.children) for x in tables]
+        filteredrows = [x for x in rows if x.find('td', 'torrent') is not None]
+        first = filteredrows[0]
+        i = 10
         # parse into tuples/dictionary
         # check with "title in name"
 
