@@ -1,11 +1,11 @@
 import multiprocessing as mp
-from torrench.utilities.http_utils import http_request
+from torrench.utilities.http_utils import http_request_multi, http_request
 from torrench.globals import logger
 from torrench.utilities.search_result import SearchResult
 from bs4 import BeautifulSoup
 
 from typing import List
-proxy_timeout_s = 15
+proxy_timeout_s = 4
 
 
 class BaseScraper:
@@ -13,19 +13,23 @@ class BaseScraper:
     """Checks a list of proxies and returns a proxy that is valid"""
     @staticmethod
     def check_proxies(proxies: List[str], validityfunc) -> List[str]:
-        output = mp.Queue()
-        processes = [mp.Process(target=http_request, args=(proxy, proxy_timeout_s)) for proxy in proxies]
+        manager = mp.Manager()
+        output = manager.Queue()
+        processes = [mp.Process(target=http_request_multi, args=(proxy, proxy_timeout_s, output)) for proxy in proxies]
 
         # Run processes
         for p in processes:
             p.start()
 
         # Exit the completed processes
+        i = 1
         for p in processes:
             p.join()
+            print(i)
+            i += 1
 
         # Get process results from the output queue
-        results = [output.get() for p in processes]
+        results = [output.get() for p in processes] # check if value is available instead of doing all threads
         return [x for x in results if x is not None and validityfunc(x)]
 
 
@@ -33,7 +37,7 @@ class BaseScraper:
     Fetches a list of url strings and returns the soup
     """
     @staticmethod
-    def fetch_pages(urls: List[str], timeout_fetch_seconds) -> List[BeautifulSoup]:
+    def fetch_pages(urls: List[str], timeout_fetch_seconds: int) -> List[BeautifulSoup]:
         #  Possible to parralellize this function similar to check_proxies
         return [http_request(x, timeout_fetch_seconds) for x in urls]
 
@@ -43,7 +47,7 @@ class BaseScraper:
     Returns list of search results
     Needs to be overridden in inheriting class
     """
-    def search(self, title, pages) -> List[SearchResult]:
+    def search(self, title: str, max_results: int) -> List[SearchResult]:
         logger.debug("Search is not implemented in {}".format(self.__class__.__name__))
         raise NotImplementedError("Search is not implemented in {}".format(self.__class__.__name__))
 

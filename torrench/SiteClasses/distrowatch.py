@@ -16,18 +16,20 @@ class DistroWatchResult(SearchResult):
         SearchResult.__init__(self, sitename, name, None, link, None, None, None)
         self.date = date
 
+
 class DistroWatch(BaseScraper):
 
-
     def __init__(self):
+        self.data = None
         soup = http_request(siteurl, timeout)
-        tables = [x for x in soup.findAll('table') if x.find('table') is None]  # only tables that do not contain tables
-        rows = []
-        for x in tables:
-            rows += x.children  # add all child elements of tables to a one dimensional list
-        rows = [x for x in rows if isinstance(x, Tag)]  # remove all elements that arent tags
-        rows = [x for x in rows if x.find('td', 'torrent') is not None]  # remove all tags that do not contain a td with a property torrent
-        self.data = [self.process_row(x) for x in rows]
+        if soup is not None: # html could be parsed
+            tables = [x for x in soup.findAll('table') if x.find('table') is None]  # only tables that do not contain tables
+            rows = []
+            for x in tables:
+                rows += x.children  # add all child elements of tables to a one dimensional list
+            rows = [x for x in rows if isinstance(x, Tag)]  # remove all elements that arent tags
+            rows = [x for x in rows if x.find('td', 'torrent') is not None]  # remove all tags that do not contain a td with a property torrent
+            self.data = [self.process_row(x) for x in rows]
 
     @staticmethod
     def process_row(tag: Tag):
@@ -48,8 +50,10 @@ class DistroWatch(BaseScraper):
     Returns list of search results
     Needs to be overridden in inheriting class
     """
-    def search(self, title : str, pages : int) -> List[DistroWatchResult]:
+    def search(self, title: str, max_results: int) -> List[DistroWatchResult]:
         matches = [x for x in self.data if title.lower() in x[0].lower()]
+        if len(matches) > max_results:
+            matches = matches[:max_results]
         return [DistroWatchResult(x[0], siteurl + x[1], x[2]) for x in matches]
 
     """

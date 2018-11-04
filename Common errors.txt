@@ -1,0 +1,5 @@
+Bugs ive found that might occur more often
+
+Pickling a beautifullsoup object can create a stackoverflow error.
+Keywords: process, parallel, thread, stackoverflow, stack overflow, pickle, beautifullsoup
+https://bugs.python.org/issue1757057
