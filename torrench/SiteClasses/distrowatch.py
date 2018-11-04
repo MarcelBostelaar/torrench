@@ -1,8 +1,8 @@
 from torrench.SiteClasses.basescraper import BaseScraper
-from torrench.globals import logger
+#from torrench.globals import logger
 from torrench.utilities.http_utils import http_request
 from torrench.utilities.search_result import SearchResult
-import re
+#import re
 from bs4 import Tag, NavigableString
 from typing import List
 

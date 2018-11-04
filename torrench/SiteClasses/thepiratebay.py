@@ -1,9 +1,10 @@
 from torrench.SiteClasses.basescraper import BaseScraper
 from torrench.globals import logger
-from torrench.utilities.http_utils import http_request
+from torrench.utilities.http_utils import check_proxies, fetch_pages
 from torrench.utilities.search_result import SearchResult
 import re
-from typing import List
+from typing import List, Union
+from bs4 import BeautifulSoup
 
 searchurlbase = "/search/%s/%d/99/0"
 top = "/top/all"
@@ -50,7 +51,9 @@ for the top of the past 48h and the top 100 torrents respectively.
 class ThePirateBay(BaseScraper):
 
     def __init__(self, proxies):
-        validproxies = self.check_proxies(proxies, lambda soup: soup.a.string != 'The Pirate Bay')
+        print("Checking proxies pirate bay")
+        validproxies = check_proxies(proxies, lambda soup: soup.a.string == 'The Pirate Bay')
+        print("Checked proxies pirate bay")
         if len(validproxies) > 0:
             self.active_proxy = validproxies[0]
         else:
@@ -63,58 +66,63 @@ class ThePirateBay(BaseScraper):
             raise Exception(search_message)
         pages = [self.active_proxy + searchurlbase % (title, page)
                  for page in range(int(max_results / results_per_page) + 1)]
-        return self.__parsehtml(self.fetch_pages(pages, timeout_fetch_s))
+        return self.__parsehtml(fetch_pages(pages, timeout_fetch_s))
 
     def can_search(self):
         return self.active_proxy is not None
 
     def search_top48h(self) -> List[PirateBayResult]:
-        return self.__parsehtml(self.fetch_pages([self.active_proxy + top48], timeout_fetch_s))
+        return self.__parsehtml(fetch_pages([self.active_proxy + top48], timeout_fetch_s))
 
     def search_top100(self) -> List[PirateBayResult]:
-        return self.__parsehtml(self.fetch_pages([self.active_proxy + top], timeout_fetch_s))
+        return self.__parsehtml(fetch_pages([self.active_proxy + top], timeout_fetch_s))
 
-    def __parsehtml(self, pages) -> List[PirateBayResult]:
+    def __parsehtml(self, pages: List[BeautifulSoup]) -> List[PirateBayResult]:
         content = [page.find('table', id="searchResult") for page in pages]
+        if content is None:
+            return []
         data = [x.find_all('tr') for x in content]
         data = [[self.__parse_table_entry(entry) for entry in page[1:]] for page in data]
         flattened = []
         for i in data:
             flattened += i
-        return flattened
+        return [x for x in flattened if x is not None]
 
-    def __parse_table_entry(self, entry) -> PirateBayResult:
-        name = entry.find('a', class_='detLink').string
-        if name is None:
-            name = entry.find('a', class_='detLink')['title'].split(" ")[2:]
-            name = " ".join(str(x) for x in name)
-        uploader = entry.find('font', class_="detDesc").a
-        if uploader is None:
-            uploader = entry.find('font', class_="detDesc").i.string
-        else:
-            uploader = uploader.string
-        comment_regex = re.compile("This torrent has [\d] comments\.")
-        comments = entry.find(
-            'img', {'title': comment_regex})
-        # Total number of comments
-        if comments is None:
-            num_of_comments = 0
-        else:
-            num_of_comments = int(comments['alt'].split(" ")[-2])
-        # See if uploader is VIP/Truested/Normal Uploader
-        is_vip = entry.find('img', {'title': "VIP"}) is not None
-        is_trusted = entry.find('img', {'title': 'Trusted'}) is not None
-        categ = entry.find('td', class_="vertTh").find_all('a')[0].string
-        sub_categ = entry.find('td', class_="vertTh").find_all('a')[1].string
-        seeds = int(entry.find_all('td', align="right")[0].string)
-        leeches = int(entry.find_all('td', align="right")[1].string)
-        date = entry.find('font', class_="detDesc").get_text().split(' ')[1].replace(',', "")
-        size = entry.find('font', class_="detDesc").get_text().split(' ')[3].replace(',', "")
-        # Unique torrent id
-        torr_id = entry.find('a', {'class': 'detLink'})["href"].split('/')[2]
-        # Upstream torrent link
-        link = "%s/torrent/%s" % (self.active_proxy, torr_id)
-        magnet = entry.find_all('a', {'title': 'Download this torrent using magnet'})[0]['href']
+    def __parse_table_entry(self, entry) -> Union[PirateBayResult, None]:
+        try:
+            name = entry.find('a', class_='detLink').string
+            if name is None:
+                name = entry.find('a', class_='detLink')['title'].split(" ")[2:]
+                name = " ".join(str(x) for x in name)
+            uploader = entry.find('font', class_="detDesc").a
+            if uploader is None:
+                uploader = entry.find('font', class_="detDesc").i.string
+            else:
+                uploader = uploader.string
+            comment_regex = re.compile("This torrent has [\d] comments\.")
+            comments = entry.find(
+                'img', {'title': comment_regex})
+            # Total number of comments
+            if comments is None:
+                num_of_comments = 0
+            else:
+                num_of_comments = int(comments['alt'].split(" ")[-2])
+            # See if uploader is VIP/Truested/Normal Uploader
+            is_vip = entry.find('img', {'title': "VIP"}) is not None
+            is_trusted = entry.find('img', {'title': 'Trusted'}) is not None
+            categ = entry.find('td', class_="vertTh").find_all('a')[0].string
+            sub_categ = entry.find('td', class_="vertTh").find_all('a')[1].string
+            seeds = int(entry.find_all('td', align="right")[0].string)
+            leeches = int(entry.find_all('td', align="right")[1].string)
+            date = entry.find('font', class_="detDesc").get_text().split(' ')[1].replace(',', "")
+            size = entry.find('font', class_="detDesc").get_text().split(' ')[3].replace(',', "")
+            # Unique torrent id
+            torr_id = entry.find('a', {'class': 'detLink'})["href"].split('/')[2]
+            # Upstream torrent link
+            link = "%s/torrent/%s" % (self.active_proxy, torr_id)
+            magnet = entry.find_all('a', {'title': 'Download this torrent using magnet'})[0]['href']
 
-        return PirateBayResult(name, uploader, link, magnet, seeds, leeches, num_of_comments,
-                               is_trusted, is_vip, categ, sub_categ, date, size)
+            return PirateBayResult(name, uploader, link, magnet, seeds, leeches, num_of_comments,
+                                   is_trusted, is_vip, categ, sub_categ, date, size)
+        except:
+            return None
