@@ -31,16 +31,32 @@ def http_request(url: str, timeout_seconds: int) -> Union[None, BeautifulSoup]:
         sys.exit(2)
 
 
+def http_check(url: str, timeout_seconds: int) -> bool:
+    """Checks if a webpage can be reached without parsing it"""
+    try:
+        try:
+            raw = requests.get(url, timeout=timeout_seconds)
+            logger.debug("returned status code: %d for url %s" % (raw.status_code, url))
+        except:
+            return False
+        return True
+    except KeyboardInterrupt as e:
+        print("Aborted!")
+        logger.exception(e)
+        sys.exit(2)
+
+
 def check_proxy_multithread(url: str, timeout_seconds: int, queue: Queue):
-    result = http_request(url, timeout_seconds)
-    if result is not None:
+    """Checks if proxies can be reached
+    Puts proxy link in queue if reachable, puts None if not reachable"""
+    if http_check(url, timeout_seconds):
         queue.put(url)
     else:
         queue.put(None)
 
 
-"""Checks a list of proxies and returns a proxy that is valid"""
 def check_proxies(proxies: List[str], validityfunc) -> List[str]:
+    """Checks a list of proxies and returns a proxy that is valid"""
     manager = mp.Manager()
     output = manager.Queue()
     processes = [mp.Process(target=check_proxy_multithread, args=(proxy, proxy_timeout_s, output)) for proxy in proxies]
@@ -60,16 +76,17 @@ def check_proxies(proxies: List[str], validityfunc) -> List[str]:
     return [page[0] for page in pages if page[1] is not None and validityfunc(page[1])]
 
 
-"""
-Fetches a list of url strings and returns the soup
-"""
 def fetch_pages(urls: List[str], timeout_fetch_seconds: int) -> List[BeautifulSoup]:
+    """
+    Fetches a list of url strings and returns the soup
+    """
     #  Cannot parrallize this function until pickle can handle beautifullsoup objects
     return [http_request(x, timeout_fetch_seconds) for x in urls]
 
-"""
-Fetches a list of url strings and returns the tuple with the url and soup
-"""
+
 def fetch_pages_withurl(urls: List[str], timeout_fetch_seconds: int) -> List[Tuple[str, BeautifulSoup]]:
+    """
+    Fetches a list of url strings and returns the tuple with the url and soup
+    """
     #  Cannot parrallize this function until pickle can handle beautifullsoup objects
     return [(x, http_request(x, timeout_fetch_seconds)) for x in urls]
